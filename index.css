@@ -1,132 +1,28 @@
-/* style.css */
-:root {
-  --primary: #0066ff;
-  --secondary: #f5f7ff;
-  --radius: 8px;
-  --shadow: 0 2px 10px rgba(0,0,0,.08);
-}
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: "Segoe UI", sans-serif;
-}
-
-body {
-  background: var(--secondary);
-  padding: 40px 20px;
-}
-
-h1 {
-  text-align: center;
-  margin-bottom: 30px;
-  color: var(--primary);
-}
-
-.filter-bar {
-  max-width: 800px;
-  margin: 0 auto 30px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  justify-content: center;
-}
-
-.filter-bar select,
-.filter-bar input {
-  padding: 8px 12px;
-  border: 1px solid #ccc;
-  border-radius: var(--radius);
-}
-
-.produk-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 25px;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.card {
-  background: #fff;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  transition: transform .25s;
-}
-
-.card:hover {
-  transform: translateY(-4px);
-}
-
-.card img {
-  width: 100%;
-  aspect-ratio: 4/3;
-  object-fit: cover;
-  display: block;
-}
-
-.card-body {
-  padding: 15px;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.card h3 {
-  font-size: 1.1rem;
-  margin-bottom: 6px;
-  color: #111;
-}
-
-.card .kategori {
-  font-size: .85rem;
-  color: #555;
-  margin-bottom: 10px;
-}
-
-.harga {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
-}
-
-.harga-diskon {
-  font-weight: 700;
-  font-size: 1.1rem;
-  color: var(--primary);
-}
-
-.harga-asli {
-  text-decoration: line-through;
-  color: #888;
-  font-size: .9rem;
-}
-
-.stok {
-  font-size: .85rem;
-  margin-bottom: 8px;
-}
-
-.stok.habis {
-  color: #e60000;
-  font-weight: 700;
-}
-
-.rating {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: .85rem;
-}
-
-@media (max-width: 480px) {
-  .produk-grid {
-    grid-template-columns: 1fr;
-  }
-}
+/* Pindahkan semua CSS dari tag <style> ke file ini */
+:root{--pink:#ff4f9a;--purple:#b43e8f;--white:#fff;--text:#333;--grey:#f5f5f5;--shadow:0 4px 12px rgba(255,79,154,.25);}
+[data-theme="dark"]{--white:#1e1e1e;--text:#f5f5f5;--grey:#2c2c2c;}
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Poppins',sans-serif}
+body{background:linear-gradient(135deg,var(--pink),var(--purple));color:var(--text);transition:background .3s;min-height:100vh;padding-bottom:100px}
+nav{background:var(--white);display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:12px 24px;position:sticky;top:0;z-index:10;box-shadow:var(--shadow)}
+.brand{color:var(--pink);font-weight:600;font-size:20px;margin-right:auto}
+.controls{display:flex;gap:10px;flex-wrap:wrap}
+input,select{padding:6px 10px;border-radius:20px;border:1px solid #ddd;background:var(--white);color:var(--text)}
+.toggle-view,.theme-btn{border:none;background:transparent;font-size:22px;cursor:pointer;margin-left:10px}
+.produk-container{display:flex;flex-wrap:wrap;gap:30px;justify-content:center;padding:20px}
+.produk-card{background:var(--white);border-radius:12px;width:260px;overflow:hidden;box-shadow:var(--shadow);transition:.3s;position:relative}
+.produk-card:hover{transform:translateY(-6px)}
+.produk-card img{width:100%;height:160px;object-fit:cover}
+.produk-info{padding:15px}
+.produk-info h3{font-size:18px;margin-bottom:6px}
+.diskon{color:#e91e63;font-weight:600}
+.stok-habis{background:#ccc;cursor:not-allowed}
+.fav{position:absolute;top:10px;right:12px;font-size:22px;cursor:pointer;color:#ccc}
+.fav.active{color:#e91e63}
+.pagination{display:flex;justify-content:center;margin:20px;gap:10px}
+.pagination button{border:none;padding:8px 14px;border-radius:20px;background:var(--white);color:var(--pink);cursor:pointer;font-weight:600}
+.pagination button.active{background:var(--pink);color:var(--white)}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:100}
+.modal-content{background:var(--white);padding:25px;border-radius:12px;width:90%;max-width:400px;max-height:80vh;overflow-y:auto}
+.modal-item{display:flex;justify-content:space-between;margin-bottom:8px}
+.keranjang{position:fixed;bottom:20px;right:20px;background:var(--white);padding:12px 20px;border-radius:30px;box-shadow:var(--shadow);cursor:pointer;font-weight:600}
+.toastify{background:var(--pink)}
