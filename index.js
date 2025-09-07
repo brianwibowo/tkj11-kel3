@@ -1,91 +1,118 @@
-// script.js
-// Pastikan array produkData sudah tersedia di global scope
-const produkData = [/* ...data Anda... */];
-
-const root = document.getElementById('app');
-root.innerHTML = `
-  <h1>Katalog Produk</h1>
-  <div class="filter-bar">
-    <input type="text" id="search" placeholder="Cari nama...">
-    <select id="kategoriFilter">
-      <option value="">Semua Kategori</option>
-    </select>
-    <select id="urutkan">
-      <option value="">Urutkan</option>
-      <option value="harga-asc">Harga ↓</option>
-      <option value="harga-desc">Harga ↑</option>
-      <option value="rating">Rating</option>
-    </select>
-  </div>
-  <div class="produk-grid" id="produkContainer"></div>
-`;
-
-// Populate kategori
-const kategoriSet = [...new Set(produkData.map(p => p.kategori))];
-const kategoriFilter = document.getElementById('kategoriFilter');
-kategoriSet.forEach(kat => {
-  kategoriFilter.innerHTML += `<option value="${kat}">${kat}</option>`;
-});
-
-// Render produk
-function renderProduk(list) {
-  const container = document.getElementById('produkContainer');
-  container.innerHTML = '';
-
-  list.forEach(p => {
-    const hargaDiskon = p.hargaAsli - (p.hargaAsli * p.diskon / 100);
-    const stokLabel = p.stok > 0 ? `${p.stok} unit` : 'Stok habis';
-
-    container.innerHTML += `
-      <div class="card">
+// Pindahkan semua JavaScript dari tag <script> ke file ini
+const kategoriList = ["all","laptop","mouse","keyboard","monitor","smartphone","console","speaker","kamera","tablet","storage","headset"];
+const produkData = [
+    {id:1,nama:"Laptop ASUS ROG",kategori:"laptop",hargaAsli:15000000,diskon:10,stok:5,rating:4.8,gambar:"https://images.unsplash.com/photo-1603302576837-37561b2e2302?auto=format&fit=crop&w=600&q=80"},
+    {id:2,nama:"Mouse Logitech MX",kategori:"mouse",hargaAsli:800000,diskon:5,stok:12,rating:4.7,gambar:"https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?auto=format&fit=crop&w=600&q=80"},
+    {id:3,nama:"Keyboard Keychron K6",kategori:"keyboard",hargaAsli:1100000,diskon:15,stok:8,rating:4.6,gambar:"https://images.unsplash.com/photo-1595225476474-87563907a212?auto=format&fit=crop&w=600&q=80"},
+    {id:4,nama:"Monitor LG 27 4K",kategori:"monitor",hargaAsli:5500000,diskon:20,stok:4,rating:4.9,gambar:"https://images.unsplash.com/photo-1616763355548-1b606f439f86?auto=format&fit=crop&w=600&q=80"},
+    {id:5,nama:"iPhone 15 Pro",kategori:"smartphone",hargaAsli:20000000,diskon:5,stok:3,rating:4.9,gambar:"https://images.unsplash.com/photo-1592286618771-82a82a91ca41?auto=format&fit=crop&w=600&q=80"},
+    {id:6,nama:"PlayStation 5",kategori:"console",hargaAsli:8500000,diskon:8,stok:2,rating:4.8,gambar:"https://images.unsplash.com/photo-1607858544874-0355d457c059?auto=format&fit=crop&w=600&q=80"},
+    {id:7,nama:"JBL Flip 6",kategori:"speaker",hargaAsli:1300000,diskon:12,stok:10,rating:4.5,gambar:"https://images.unsplash.com/photo-1608043152269-423dbba4e9e1?auto=format&fit=crop&w=600&q=80"},
+    {id:8,nama:"GoPro Hero 12",kategori:"kamera",hargaAsli:6200000,diskon:10,stok:6,rating:4.7,gambar:"https://images.unsplash.com/photo-1502920917128-1aa500764cbd?auto=format&fit=crop&w=600&q=80"},
+    {id:9,nama:"iPad Air Gen 5",kategori:"tablet",hargaAsli:9000000,diskon:7,stok:7,rating:4.8,gambar:"https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?auto=format&fit=crop&w=600&q=80"},
+    {id:10,nama:"Samsung T7 SSD 1TB",kategori:"storage",hargaAsli:1600000,diskon:18,stok:15,rating:4.6,gambar:"https://images.unsplash.com/photo-1597740985671-2a8a3b80502e?auto=format&fit=crop&w=600&q=80"},
+    {id:11,nama:"Razer Kraken V3",kategori:"headset",hargaAsli:1800000,diskon:10,stok:9,rating:4.5,gambar:"https://images.unsplash.com/photo-1518715159738-8c3f6a73dc73?auto=format&fit=crop&w=600&q=80"},
+    {id:12,nama:"Xbox Series S",kategori:"console",hargaAsli:4300000,diskon:5,stok:0,rating:4.4,gambar:"https://images.unsplash.com/photo-1605379399642-870262d3d051?auto=format&fit=crop&w=600&q=80"}
+];
+produkData.forEach(p=>{p.harga=Math.round(p.hargaAsli*(100-p.diskon)/100);});
+let produk=[...produkData],fav=JSON.parse(localStorage.getItem("fav")||"[]"),cart=[],page=1,perPage=6,view="grid";
+function render(){
+    const c=document.getElementById("produkContainer");
+    c.className=`produk-container ${view==="list"?"list":""}`;
+    c.innerHTML="";
+    const start=(page-1)*perPage,end=start+perPage;
+    produk.slice(start,end).forEach(p=>{
+        const card=document.createElement("div");
+        card.className="produk-card";
+        card.innerHTML=`
         <img src="${p.gambar}" alt="${p.nama}">
-        <div class="card-body">
-          <div>
-            <h3>${p.nama}</h3>
-            <span class="kategori">${p.kategori}</span>
-            <div class="harga">
-              <span class="harga-diskon">Rp ${hargaDiskon.toLocaleString('id-ID')}</span>
-              <span class="harga-asli">Rp ${p.hargaAsli.toLocaleString('id-ID')}</span>
-            </div>
-            <div class="stok ${p.stok ? '' : 'habis'}">${stokLabel}</div>
-            <div class="rating">
-              ⭐ ${p.rating}
-            </div>
-          </div>
+        <div class="fav ${fav.includes(p.id)?'active':''}" onclick="toggleFav(${p.id})">❤</div>
+        <div class="produk-info">
+        <h3>${p.nama}</h3>
+        <p>
+        <span class="diskon">Rp${p.harga.toLocaleString("id-ID")} (-${p.diskon}%)</span><br>
+        <s>Rp${p.hargaAsli.toLocaleString("id-ID")}</s>
+        </p>
+        <span>⭐ ${p.rating}</span> · Stok: ${p.stok}
+        <div class="btn-group">
+        <button class="btn btn-detail">Detail</button>
+        <button class="btn btn-buy ${p.stok===0?"stok-habis":""}" 
+        ${p.stok===0?"disabled":""} onclick="beli(${p.id})">Beli</button>
         </div>
-      </div>
-    `;
-  });
+        </div>`;
+        c.appendChild(card);
+    });
+    renderPagination();
+    document.getElementById("favCount").textContent=`❤ ${fav.length}`;
+    document.getElementById("cartIcon").textContent=`🛒 ${cart.length}`;
 }
-
-// Filter & sort logic
-const searchInput = document.getElementById('search');
-const kategoriSelect = document.getElementById('kategoriFilter');
-const urutkanSelect = document.getElementById('urutkan');
-
-function filterProduk() {
-  let data = [...produkData];
-
-  // Search
-  const q = searchInput.value.toLowerCase();
-  if (q) data = data.filter(p => p.nama.toLowerCase().includes(q));
-
-  // Kategori
-  const kat = kategoriSelect.value;
-  if (kat) data = data.filter(p => p.kategori === kat);
-
-  // Urutkan
-  const sort = urutkanSelect.value;
-  if (sort === 'harga-asc') data.sort((a, b) => (a.hargaAsli * (1 - a.diskon / 100)) - (b.hargaAsli * (1 - b.diskon / 100)));
-  if (sort === 'harga-desc') data.sort((a, b) => (b.hargaAsli * (1 - b.diskon / 100)) - (a.hargaAsli * (1 - a.diskon / 100)));
-  if (sort === 'rating') data.sort((a, b) => b.rating - a.rating);
-
-  renderProduk(data);
+function renderPagination(){
+    const totalPages=Math.ceil(produk.length/perPage);
+    const pg=document.getElementById("pagination");
+    pg.innerHTML="";
+    for(let i=1;i<=totalPages;i++){
+        const btn=document.createElement("button");
+        btn.textContent=i;
+        btn.className=i===page?"active":"";
+        btn.onclick=()=>{page=i;render();};
+        pg.appendChild(btn);
+    }
 }
-
-searchInput.addEventListener('input', filterProduk);
-kategoriSelect.addEventListener('change', filterProduk);
-urutkanSelect.addEventListener('change', filterProduk);
-
-// Initial render
-renderProduk(produkData);
+function filter(){
+    const kw=document.getElementById("search").value.toLowerCase();
+    const kat=document.getElementById("kategori").value;
+    const sort=document.getElementById("sort").value;
+    produk=produkData.filter(p=>p.nama.toLowerCase().includes(kw)&&(kat==="all"||p.kategori===kat));
+    if(sort==="nama-asc") produk.sort((a,b)=>a.nama.localeCompare(b.nama));
+    if(sort==="nama-desc") produk.sort((a,b)=>b.nama.localeCompare(a.nama));
+    if(sort==="harga-asc") produk.sort((a,b)=>a.harga-b.harga);
+    if(sort==="harga-desc") produk.sort((a,b)=>b.harga-a.harga);
+    if(sort==="rating-desc") produk.sort((a,b)=>b.rating-a.rating);
+    page=1;render();
+}
+["search","kategori","sort"].forEach(id=>document.getElementById(id).addEventListener("input",filter));
+function toggleFav(id){
+    fav.includes(id)?fav.splice(fav.indexOf(id),1):fav.push(id);
+    localStorage.setItem("fav",JSON.stringify(fav));
+    render();
+}
+function beli(id){
+    const p=produkData.find(x=>x.id===id);
+    if(p.stok===0) return;
+    cart.push({...p});
+    Toastify({text:`${p.nama} ditambahkan`,duration:1500,backgroundColor:"var(--pink)"}).showToast();
+    updateCart();
+}
+function updateCart(){
+    const c=document.getElementById("cartItems");
+    c.innerHTML="";
+    let total=0;
+    cart.forEach((item,idx)=>{
+        total+=item.harga;
+        c.insertAdjacentHTML("beforeend",`<div class="modal-item">
+        <span>${item.nama} – Rp${item.harga.toLocaleString("id-ID")}</span>
+        <button onclick="cart.splice(${idx},1);updateCart()">🗑</button></div>`);
+    });
+    document.getElementById("cartTotal").textContent=`Rp${total.toLocaleString("id-ID")}`;
+    document.getElementById("cartIcon").textContent=`🛒 ${cart.length}`;
+}
+function tutupCart(){document.getElementById("cartModal").style.display="none";}
+document.getElementById("cartIcon").addEventListener("click",()=>{updateCart();document.getElementById("cartModal").style.display="flex";});
+document.getElementById("toggleView").addEventListener("click",()=>{
+    view=view==="grid"?"list":"grid";
+    document.getElementById("toggleView").textContent=view==="grid"?"📋":"📊";
+    render();
+});
+document.getElementById("toggleTheme").addEventListener("click",()=>{
+    const html=document.documentElement;
+    const next=html.getAttribute("data-theme")==="light"?"dark":"light";
+    html.setAttribute("data-theme",next);
+    document.getElementById("toggleTheme").textContent=next==="light"?"🌙":"☀️";
+});
+// init
+kategoriList.forEach(k=>{
+    const opt=document.createElement("option");
+    opt.value=k;opt.textContent=k==="all"?"Semua":k[0].toUpperCase()+k.slice(1);
+    document.getElementById("kategori").appendChild(opt);
+});
+render();
