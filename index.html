@@ -1,208 +1,51 @@
 <!DOCTYPE html>
 <html lang="id" data-theme="light">
 <head>
-  <meta charset="UTF-8" />
-  <title>Toko Gadget Pink – Ultimate</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css"/>
-  <style>
-    :root{--pink:#ff4f9a;--purple:#b43e8f;--white:#fff;--text:#333;--grey:#f5f5f5;--shadow:0 4px 12px rgba(255,79,154,.25);}
-    [data-theme="dark"]{--white:#1e1e1e;--text:#f5f5f5;--grey:#2c2c2c;}
-    *{box-sizing:border-box;margin:0;padding:0;font-family:'Poppins',sans-serif}
-    body{background:linear-gradient(135deg,var(--pink),var(--purple));color:var(--text);transition:background .3s;min-height:100vh;padding-bottom:100px}
-    nav{background:var(--white);display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:12px 24px;position:sticky;top:0;z-index:10;box-shadow:var(--shadow)}
-    .brand{color:var(--pink);font-weight:600;font-size:20px;margin-right:auto}
-    .controls{display:flex;gap:10px;flex-wrap:wrap}
-    input,select{padding:6px 10px;border-radius:20px;border:1px solid #ddd;background:var(--white);color:var(--text)}
-    .toggle-view,.theme-btn{border:none;background:transparent;font-size:22px;cursor:pointer;margin-left:10px}
-    .produk-container{display:flex;flex-wrap:wrap;gap:30px;justify-content:center;padding:20px}
-    .produk-card{background:var(--white);border-radius:12px;width:260px;overflow:hidden;box-shadow:var(--shadow);transition:.3s;position:relative}
-    .produk-card:hover{transform:translateY(-6px)}
-    .produk-card img{width:100%;height:160px;object-fit:cover}
-    .produk-info{padding:15px}
-    .produk-info h3{font-size:18px;margin-bottom:6px}
-    .diskon{color:#e91e63;font-weight:600}
-    .stok-habis{background:#ccc;cursor:not-allowed}
-    .fav{position:absolute;top:10px;right:12px;font-size:22px;cursor:pointer;color:#ccc}
-    .fav.active{color:#e91e63}
-    .pagination{display:flex;justify-content:center;margin:20px;gap:10px}
-    .pagination button{border:none;padding:8px 14px;border-radius:20px;background:var(--white);color:var(--pink);cursor:pointer;font-weight:600}
-    .pagination button.active{background:var(--pink);color:var(--white)}
-    .modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:100}
-    .modal-content{background:var(--white);padding:25px;border-radius:12px;width:90%;max-width:400px;max-height:80vh;overflow-y:auto}
-    .modal-item{display:flex;justify-content:space-between;margin-bottom:8px}
-    .keranjang{position:fixed;bottom:20px;right:20px;background:var(--white);padding:12px 20px;border-radius:30px;box-shadow:var(--shadow);cursor:pointer;font-weight:600}
-    .toastify{background:var(--pink)}
-  </style>
+    <meta charset="UTF-8" />
+    <title>Toko Gadget Pink – Ultimate</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css"/>
+    
+    <link rel="stylesheet" href="index.css">
 </head>
 <body>
 
-<nav>
-  <div class="brand">Toko Gadget Pink</div>
-  <div class="controls">
-    <input type="search" id="search" placeholder="Cari produk..." />
-    <select id="kategori"><option value="all">Semua Kategori</option></select>
-    <select id="sort">
-      <option value="default">Urutkan</option>
-      <option value="nama-asc">Nama A-Z</option>
-      <option value="nama-desc">Nama Z-A</option>
-      <option value="harga-asc">Harga ↑</option>
-      <option value="harga-desc">Harga ↓</option>
-      <option value="rating-desc">Rating ↓</option>
-    </select>
-    <button class="toggle-view" id="toggleView" title="Grid/List">📋</button>
-    <button class="theme-btn" id="toggleTheme" title="Mode">🌙</button>
-  </div>
-  <div>
-    <span id="favCount">❤ 0</span>
-    <span id="cartIcon" class="keranjang">🛒 0</span>
-  </div>
-</nav>
-
-<div class="produk-container" id="produkContainer"></div>
-<div class="pagination" id="pagination"></div>
-
-<div class="modal" id="cartModal">
-  <div class="modal-content">
-    <span style="float:right;cursor:pointer;font-size:24px" onclick="tutupCart()">&times;</span>
-    <h2>Keranjang</h2>
-    <div id="cartItems"></div>
-    <hr />
-    <p><strong>Total: <span id="cartTotal">Rp0</span></strong></p>
-  </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-<script>
-const kategoriList = ["all","laptop","mouse","keyboard","monitor","smartphone","console","speaker","kamera","tablet","storage","headset"];
-const produkData = [
-  {id:1,nama:"Laptop ASUS ROG",kategori:"laptop",hargaAsli:15000000,diskon:10,stok:5,rating:4.8,gambar:"https://images.unsplash.com/photo-1603302576837-37561b2e2302?auto=format&fit=crop&w=600&q=80"},
-  {id:2,nama:"Mouse Logitech MX",kategori:"mouse",hargaAsli:800000,diskon:5,stok:12,rating:4.7,gambar:"https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?auto=format&fit=crop&w=600&q=80"},
-  {id:3,nama:"Keyboard Keychron K6",kategori:"keyboard",hargaAsli:1100000,diskon:15,stok:8,rating:4.6,gambar:"https://images.unsplash.com/photo-1595225476474-87563907a212?auto=format&fit=crop&w=600&q=80"},
-  {id:4,nama:"Monitor LG 27 4K",kategori:"monitor",hargaAsli:5500000,diskon:20,stok:4,rating:4.9,gambar:"https://images.unsplash.com/photo-1616763355548-1b606f439f86?auto=format&fit=crop&w=600&q=80"},
-  {id:5,nama:"iPhone 15 Pro",kategori:"smartphone",hargaAsli:20000000,diskon:5,stok:3,rating:4.9,gambar:"https://images.unsplash.com/photo-1592286618771-82a82a91ca41?auto=format&fit=crop&w=600&q=80"},
-  {id:6,nama:"PlayStation 5",kategori:"console",hargaAsli:8500000,diskon:8,stok:2,rating:4.8,gambar:"https://images.unsplash.com/photo-1607858544874-0355d457c059?auto=format&fit=crop&w=600&q=80"},
-  {id:7,nama:"JBL Flip 6",kategori:"speaker",hargaAsli:1300000,diskon:12,stok:10,rating:4.5,gambar:"https://images.unsplash.com/photo-1608043152269-423dbba4e9e1?auto=format&fit=crop&w=600&q=80"},
-  {id:8,nama:"GoPro Hero 12",kategori:"kamera",hargaAsli:6200000,diskon:10,stok:6,rating:4.7,gambar:"https://images.unsplash.com/photo-1502920917128-1aa500764cbd?auto=format&fit=crop&w=600&q=80"},
-  {id:9,nama:"iPad Air Gen 5",kategori:"tablet",hargaAsli:9000000,diskon:7,stok:7,rating:4.8,gambar:"https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?auto=format&fit=crop&w=600&q=80"},
-  {id:10,nama:"Samsung T7 SSD 1TB",kategori:"storage",hargaAsli:1600000,diskon:18,stok:15,rating:4.6,gambar:"https://images.unsplash.com/photo-1597740985671-2a8a3b80502e?auto=format&fit=crop&w=600&q=80"},
-  {id:11,nama:"Razer Kraken V3",kategori:"headset",hargaAsli:1800000,diskon:10,stok:9,rating:4.5,gambar:"https://images.unsplash.com/photo-1518715159738-8c3f6a73dc73?auto=format&fit=crop&w=600&q=80"},
-  {id:12,nama:"Xbox Series S",kategori:"console",hargaAsli:4300000,diskon:5,stok:0,rating:4.4,gambar:"https://images.unsplash.com/photo-1605379399642-870262d3d051?auto=format&fit=crop&w=600&q=80"}
-];
-
-produkData.forEach(p=>{p.harga=Math.round(p.hargaAsli*(100-p.diskon)/100);});
-let produk=[...produkData],fav=JSON.parse(localStorage.getItem("fav")||"[]"),cart=[],page=1,perPage=6,view="grid";
-
-function render(){
-  const c=document.getElementById("produkContainer");
-  c.className=`produk-container ${view==="list"?"list":""}`;
-  c.innerHTML="";
-  const start=(page-1)*perPage,end=start+perPage;
-  produk.slice(start,end).forEach(p=>{
-    const card=document.createElement("div");
-    card.className="produk-card";
-    card.innerHTML=`
-      <img src="${p.gambar}" alt="${p.nama}">
-      <div class="fav ${fav.includes(p.id)?'active':''}" onclick="toggleFav(${p.id})">❤</div>
-      <div class="produk-info">
-        <h3>${p.nama}</h3>
-        <p>
-          <span class="diskon">Rp${p.harga.toLocaleString("id-ID")} (-${p.diskon}%)</span><br>
-          <s>Rp${p.hargaAsli.toLocaleString("id-ID")}</s>
-        </p>
-        <span>⭐ ${p.rating}</span> · Stok: ${p.stok}
-        <div class="btn-group">
-          <button class="btn btn-detail">Detail</button>
-          <button class="btn btn-buy ${p.stok===0?"stok-habis":""}" 
-            ${p.stok===0?"disabled":""} onclick="beli(${p.id})">Beli</button>
+    <nav>
+        <div class="brand">Toko Gadget Pink</div>
+        <div class="controls">
+            <input type="search" id="search" placeholder="Cari produk..." />
+            <select id="kategori"><option value="all">Semua Kategori</option></select>
+            <select id="sort">
+                <option value="default">Urutkan</option>
+                <option value="nama-asc">Nama A-Z</option>
+                <option value="nama-desc">Nama Z-A</option>
+                <option value="harga-asc">Harga ↑</option>
+                <option value="harga-desc">Harga ↓</option>
+                <option value="rating-desc">Rating ↓</option>
+            </select>
+            <button class="toggle-view" id="toggleView" title="Grid/List">📋</button>
+            <button class="theme-btn" id="toggleTheme" title="Mode">🌙</button>
         </div>
-      </div>`;
-    c.appendChild(card);
-  });
-  renderPagination();
-  document.getElementById("favCount").textContent=`❤ ${fav.length}`;
-  document.getElementById("cartIcon").textContent=`🛒 ${cart.length}`;
-}
+        <div>
+            <span id="favCount">❤ 0</span>
+            <span id="cartIcon" class="keranjang">🛒 0</span>
+        </div>
+    </nav>
 
-function renderPagination(){
-  const totalPages=Math.ceil(produk.length/perPage);
-  const pg=document.getElementById("pagination");
-  pg.innerHTML="";
-  for(let i=1;i<=totalPages;i++){
-    const btn=document.createElement("button");
-    btn.textContent=i;
-    btn.className=i===page?"active":"";
-    btn.onclick=()=>{page=i;render();};
-    pg.appendChild(btn);
-  }
-}
+    <div class="produk-container" id="produkContainer"></div>
+    <div class="pagination" id="pagination"></div>
 
-function filter(){
-  const kw=document.getElementById("search").value.toLowerCase();
-  const kat=document.getElementById("kategori").value;
-  const sort=document.getElementById("sort").value;
-  produk=produkData.filter(p=>p.nama.toLowerCase().includes(kw)&&(kat==="all"||p.kategori===kat));
-  if(sort==="nama-asc") produk.sort((a,b)=>a.nama.localeCompare(b.nama));
-  if(sort==="nama-desc") produk.sort((a,b)=>b.nama.localeCompare(a.nama));
-  if(sort==="harga-asc") produk.sort((a,b)=>a.harga-b.harga);
-  if(sort==="harga-desc") produk.sort((a,b)=>b.harga-a.harga);
-  if(sort==="rating-desc") produk.sort((a,b)=>b.rating-a.rating);
-  page=1;render();
-}
+    <div class="modal" id="cartModal">
+        <div class="modal-content">
+            <span style="float:right;cursor:pointer;font-size:24px" onclick="tutupCart()">&times;</span>
+            <h2>Keranjang</h2>
+            <div id="cartItems"></div>
+            <hr />
+            <p><strong>Total: <span id="cartTotal">Rp0</span></strong></p>
+        </div>
+    </div>
 
-["search","kategori","sort"].forEach(id=>document.getElementById(id).addEventListener("input",filter));
-
-function toggleFav(id){
-  fav.includes(id)?fav.splice(fav.indexOf(id),1):fav.push(id);
-  localStorage.setItem("fav",JSON.stringify(fav));
-  render();
-}
-
-function beli(id){
-  const p=produkData.find(x=>x.id===id);
-  if(p.stok===0) return;
-  cart.push({...p});
-  Toastify({text:`${p.nama} ditambahkan`,duration:1500,backgroundColor:"var(--pink)"}).showToast();
-  updateCart();
-}
-
-function updateCart(){
-  const c=document.getElementById("cartItems");
-  c.innerHTML="";
-  let total=0;
-  cart.forEach((item,idx)=>{
-    total+=item.harga;
-    c.insertAdjacentHTML("beforeend",`<div class="modal-item">
-      <span>${item.nama} – Rp${item.harga.toLocaleString("id-ID")}</span>
-      <button onclick="cart.splice(${idx},1);updateCart()">🗑</button></div>`);
-  });
-  document.getElementById("cartTotal").textContent=`Rp${total.toLocaleString("id-ID")}`;
-  document.getElementById("cartIcon").textContent=`🛒 ${cart.length}`;
-}
-
-function tutupCart(){document.getElementById("cartModal").style.display="none";}
-document.getElementById("cartIcon").addEventListener("click",()=>{updateCart();document.getElementById("cartModal").style.display="flex";});
-
-document.getElementById("toggleView").addEventListener("click",()=>{
-  view=view==="grid"?"list":"grid";
-  document.getElementById("toggleView").textContent=view==="grid"?"📋":"📊";
-  render();
-});
-
-document.getElementById("toggleTheme").addEventListener("click",()=>{
-  const html=document.documentElement;
-  const next=html.getAttribute("data-theme")==="light"?"dark":"light";
-  html.setAttribute("data-theme",next);
-  document.getElementById("toggleTheme").textContent=next==="light"?"🌙":"☀️";
-});
-
-// init
-kategoriList.forEach(k=>{
-  const opt=document.createElement("option");
-  opt.value=k;opt.textContent=k==="all"?"Semua":k[0].toUpperCase()+k.slice(1);
-  document.getElementById("kategori").appendChild(opt);
-});
-render();
-</script>
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script src="index.js"></script>
 </body>
 </html>
